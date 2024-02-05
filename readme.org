@@ -51,7 +51,7 @@ We can demonstrate this by using booleans with print statements embedded
 
 The ~|~ operator in python is not lazy!
 
-<*<<* Example (continued again)
+** Example (continued again)
 
 However, the ~or~ operator is lazy (yes, there is a difference between these two!)
 
