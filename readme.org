@@ -162,4 +162,4 @@ Once we've chosen a, initial value, we can the define the rest of the infinite c
 
 By can, of course, do the usual stuff on this list
 
-[[file:/home/tate/MyProjects/LazyPresentation/lazyscala/MHplot.png]]
+[[file:./Scala_source/MHplot.png]]
