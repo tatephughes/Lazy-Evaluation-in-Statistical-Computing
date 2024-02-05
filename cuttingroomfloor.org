@@ -1,0 +1,73 @@
+#+TITLE: Lazy Presentation Cutting Room Floor
+
+* Simple Metropolis sampler in Haskell
+
+#+begin_src haskell :results output
+  import Control.Monad.Random
+  import Statistics.Distribution
+  import Statistics.Distribution.Normal
+  import Data.Matrix
+
+  :{
+    inverseCDF :: Double -> Double
+    inverseCDF p = quantile (normalDistr 0.0 1.0) p
+  :}
+    
+  :{
+    mh_step :: (Matrix Double) -> (Matrix Double)
+    mh_step x = fromLists $ do
+       a <- getRandomR (0.0,1.0)
+       b <- getRandomR (0.0,1.0)
+       c <- getRandomR (0.0,1.0)
+       u <- getRandomR (0.0,1.0)
+       --let prop_move = fromLists [(map (\lam -> (inverseCDF lam)) [a,b,c])]
+       --    log_acceptance_prob = -100.0
+       --return (if ((log u) < log_acceptance_prob) then prop_move else x)
+       return $ toList x
+  :}
+
+  a = fromLists [[1.0,2.0,3.0],[4.0,5.0,6.0],[7.0,8.0,9.0]]
+  mh_step a
+#+end_src
+
+#+RESULTS:
+#+begin_example
+<interactive>:16:11-20: error:
+    • No instance for (MonadRandom [])
+        arising from a use of ‘getRandomR’
+    • In a stmt of a 'do' block: a <- getRandomR (0.0, 1.0)
+      In the second argument of ‘($)’, namely
+        ‘do a <- getRandomR (0.0, 1.0)
+            b <- getRandomR (0.0, 1.0)
+            c <- getRandomR (0.0, 1.0)
+            u <- getRandomR (0.0, 1.0)
+            ....’
+      In the expression:
+        fromLists
+          $ do a <- getRandomR (0.0, 1.0)
+               b <- getRandomR (0.0, 1.0)
+               c <- getRandomR (0.0, 1.0)
+               u <- getRandomR (0.0, 1.0)
+               ....
+<interactive>:27:1-7: error:
+    Variable not in scope: mh_step :: Matrix a0 -> t
+#+end_example
+
+#+begin_src haskell :results output
+  import Control.Monad.Random
+  import Statistics.Distribution
+  import Statistics.Distribution.Normal
+  import Data.Matrix
+
+  :{
+    doubleMatrix :: Matrix Double -> Matrix Double
+    doubleMatrix = fmap (*2)
+  :}
+
+  a = fromLists [[1.0,2.0,3.0],[4.0,5.0,6.0],[7.0,8.0,9.0]]
+  toLists (doubleMatrix a)
+#+end_src
+
+#+RESULTS:
+: [[2.0,4.0,6.0],[8.0,10.0,12.0],[14.0,16.0,18.0]]
+
