@@ -118,7 +118,7 @@ the arguments are evaluated as soon as they are passed through a function, befor
 
 Say we want to do something over a range in python, but there was some ~break~ condition somewhere;
 
-#+begin_src python :session
+#+begin_src python :tangle no
   for i in range(1000000)
     do_something_interesting
     if condition: break
@@ -142,7 +142,7 @@ If the condition ended up being true at the 100th loop, then we really didn't ne
 
 Consider a program you've likely coded up before; the fibonacci sequence. Here is a relatively standard  way of doing it, in Scala.
 
-#+begin_src scala
+#+begin_src scala :tangle no
   import scala.collection.mutable.ListBuffer
 
   val n = 10
@@ -159,19 +159,19 @@ Consider a program you've likely coded up before; the fibonacci sequence. Here i
 
 ** Example: The Fibonacci sequence
 
-#+begin_src scala
+#+begin_src scala :tangle no
   def fibFrom(a: Long, b: Long): LazyList[Long] = a #:: nextfib(b, a + b)
 
   val fibs2 = fibFrom(0,1)
   //val fibs2: LazyList[Long] = LazyList(<not computed>)
 #+end_src
 ~fibs2~ represents the whole infinite sequence of fibonacci numbers! To get the nth value, is to simply extract it from the infinite list
-#+begin_src scala
+#+begin_src scala :tangle no
   fibs2(30)
   // val res0: Long = 832040
 #+end_src
 or we can take the first n elements of the list
-#+begin_src scala
+#+begin_src scala :tangle no
   fibs.take(30).toList
   //val res12: List[Long] = List(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229)
 #+end_src
@@ -180,13 +180,13 @@ or we can take the first n elements of the list
 
 We can also clean up the code quite significantly using some built-in methods
 
-#+begin_src scala
+#+begin_src scala :tangle no
   lazy val fib: LazyList[Long] = 0L #:: 1L #:: fib.zip(fib.tail).map { case (a, b) => a + b }
 #+end_src
 
 But this might look a bit intimidating to some. In Haskell, this is cleaner;
 
-#+begin_src haskell
+#+begin_src haskell :tangle no
    fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 #+end_src
 
@@ -203,7 +203,7 @@ For example, lets take a simple metropolis sampler. For the simple case of a Gau
 
 We can construct a metropolis sampler for this as follows;
 
-#+begin_src scala
+#+begin_src scala :tangle no
   import breeze.linalg._
   import breeze.stats.distributions._
   import breeze.stats.distributions.Rand.FixedSeed.randBasis
@@ -237,7 +237,7 @@ Once we've chosen a, initial value, we can the define the rest of the infinite c
 
 By can, of course, do the usual stuff on this list, like compute estimates
 
-#+begin_src scala
+#+begin_src scala :tangle no
 
   val n = 100000
   
