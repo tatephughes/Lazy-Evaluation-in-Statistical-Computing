@@ -82,6 +82,8 @@ Let's quickly go back to the motivating example, but let's also place some depen
     really_hard_computation(x)
 #+end_src
 
+#+RESULTS:
+
 Lets say ~condition(x)~ really was ~False~, and so we _have_ to do the hard computation, ~really_hard_computation(x)~. Another principle often combined with Lazy evaluation is that computation is never repeated unnecessarily; this is done by /memoization/.
 
 ** Memoization
@@ -90,11 +92,11 @@ Once ~really_hard_computation(x)~ is computed, it's value is stored in a lookup 
 This means that, if for some unpredictable reason, we have to compute ~really_hard_computation~ again, the program will fist look at the table to see whether the computation has already been done, and if it has, will simply use the value stored in memory.
 
 For this to work completely we need /referential transparency/, which is another can of worms, and can be somewhat painful to work around in statistical settings.
-* The problem with the programming languages you are used to...
+* The problem with the programming languages you are used to
 
 There are other functions in python which are lazy, for example, ~and~ is (but ~&~ is not), and any ~if~ ~else~ statements only compute what is needed.
 
-** Example 2)
+** Example: (Not so lazy) Functions
 
 However, the arguments passed into user-defined functions are always evaluated in python;
 
@@ -104,7 +106,7 @@ However, the arguments passed into user-defined functions are always evaluated i
 
 We know ~or~ is lazy, so passing through ~bool_func_1, bool_func_2~ should only evaluate ~bool_func_1~ and then 'short circuit right'?
 
-** Example 2)
+** Example: (Not so lazy) Functions
 
 #+begin_src python :session example :results output
   print(my_or_function(bool_func_1(),bool_func_2()))
@@ -112,7 +114,7 @@ We know ~or~ is lazy, so passing through ~bool_func_1, bool_func_2~ should only 
 
 the arguments are evaluated as soon as they are passed through a function, before the function is even run!
 
-** Example 3)
+** Example: Range
 
 Say we want to do something over a range in python, but there was some ~break~ condition somewhere;
 
@@ -124,10 +126,9 @@ Say we want to do something over a range in python, but there was some ~break~ c
 
 When ~range(1000000)~ is called, the entire list ~[1,2,3,...,1000000]~ is stored in memory, because ~range~ is not lazy!
 
-** Example 3)
+** Example: Range
 
 If the condition ended up being true at the 100th loop, then we really didn't need to store the other 999900 integers. If ~range~ was truly lazy, then nothing would be stored in memory until it was actually used, and in memory the list might appear like ~1,2,3,...,99,100,<not computed>~. Indeed, this is exactly how Lists work in a purely functional and lazily evaluated language like *Haskell*, or specific objects like ~LazyList~ work in *Scala*.
-
 
 * Infinite sequences
 
@@ -137,7 +138,7 @@ If the condition ended up being true at the 100th loop, then we really didn't ne
 
 - Lazyness provides a solution to this!
 
-** Example: The fibonacci sequence
+** Example: The Fibonacci sequence
 
 Consider a program you've likely coded up before; the fibonacci sequence. Here is a relatively standard  way of doing it, in Scala.
 
@@ -156,8 +157,7 @@ Consider a program you've likely coded up before; the fibonacci sequence. Here i
 #+end_src
 
 
-
-** Example: The fibonacci sequence
+** Example: The Fibonacci sequence
 
 #+begin_src scala
   def fibFrom(a: Long, b: Long): LazyList[Long] = a #:: nextfib(b, a + b)
