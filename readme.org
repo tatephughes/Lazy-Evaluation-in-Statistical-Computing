@@ -15,9 +15,9 @@ Roughly speaking, we make sure our programs only actually evaluate anything when
 
 #+begin_src python :tangle no
   if condition:
-    really_hard_computation()
-  else:
     really_easy_computation()
+  else:
+    really_hard_computation()
 #+end_src
 
 * Definition and example
@@ -26,7 +26,17 @@ Let ~f~ be some function. The function is
 - *strict* if every expression within is evaluated when ~f~ is evaluated
 - *non-strict* (lazy) if at least one of the expressions within ~f~ might not be evaluated upon evaluating ~f~.
 
-** Example
+** Example 1)
+
+Lets say we have two functions, ~bool_func_1~ and ~bool_func_2~ which output booleans, and we need at least of of them to be true in order to proceed. We would obvously do an ~Or~ statement, something like
+
+#+begin_src python :results none
+  bool_func_1() or bool_func_2()
+#+end_src
+
+But if ~bool_func_1()~ evaluates to ~True~, then we don't need to compute ~bool_func_2~ at all, since we already know that the whole expression is ~True~!
+ 
+** Example 1)
 
 Consider the function ~|~ in python, which can be used for ~Or~ statements. This operator is _not_ lazy!
 
@@ -42,7 +52,7 @@ We can demonstrate this by using booleans with print statements embedded
      return False
 #+end_src
 
-** Example (continued)
+** Example 1)
 
 #+begin_src python :session example :results output
   result = bool_func_1() | bool_func_2()
@@ -51,7 +61,7 @@ We can demonstrate this by using booleans with print statements embedded
 
 The ~|~ operator in python is not lazy!
 
-** Example (continued again)
+** Example 1)
 
 However, the ~or~ operator is lazy (yes, there is a difference between these two!)
 
@@ -61,12 +71,30 @@ However, the ~or~ operator is lazy (yes, there is a difference between these two
 #+end_src
 
 It is often said that the ~or~ operator is /short-circuiting/, while ~|~ is not; what this really means is that ~or~ is lazy!
+* Never repeat work
 
-* Other examples in python
+Let's quickly go back to the motivating example, but let's also place some dependance on a variable ~x~;
+
+#+begin_src python :tangle no
+  if condition(x):
+    really_easy_computation(x)
+  else:
+    really_hard_computation(x)
+#+end_src
+
+Lets say ~condition(x)~ really was ~False~, and so we _have_ to do the hard computation, ~really_hard_computation(x)~. Another principle often combined with Lazy evaluation is that computation is never repeated unnecessarily; this is done by /memoization/.
+
+** Memoization
+
+Once ~really_hard_computation(x)~ is computed, it's value is stored in a lookup table.
+This means that, if for some unpredictable reason, we have to compute ~really_hard_computation~ again, the program will fist look at the table to see whether the computation has already been done, and if it has, will simply use the value stored in memory.
+
+For this to work completely we need /referential transparency/, which is another can of worms, and can be somewhat painful to work around in statistical settings.
+* The problem with the programming languages you are used to...
 
 There are other functions in python which are lazy, for example, ~and~ is (but ~&~ is not), and any ~if~ ~else~ statements only compute what is needed.
 
-** User-defined functions
+** Example 2)
 
 However, the arguments passed into user-defined functions are always evaluated in python;
 
@@ -76,13 +104,30 @@ However, the arguments passed into user-defined functions are always evaluated i
 
 We know ~or~ is lazy, so passing through ~bool_func_1, bool_func_2~ should only evaluate ~bool_func_1~ and then 'short circuit right'?
 
-** User-defined functions (continued)
+** Example 2)
 
 #+begin_src python :session example :results output
   print(my_or_function(bool_func_1(),bool_func_2()))
 #+end_src
 
 the arguments are evaluated as soon as they are passed through a function, before the function is even run!
+
+** Example 3)
+
+Say we want to do something over a range in python, but there was some ~break~ condition somewhere;
+
+#+begin_src python :session
+  for i in range(1000000)
+    do_something_interesting
+    if condition: break
+#+end_src
+
+When ~range(1000000)~ is called, the entire list ~[1,2,3,...,1000000]~ is stored in memory, because ~range~ is not lazy!
+
+** Example 3)
+
+If the condition ended up being true at the 100th loop, then we really didn't need to store the other 999900 integers. If ~range~ was truly lazy, then nothing would be stored in memory until it was actually used, and in memory the list might appear like ~1,2,3,...,99,100,<not computed>~. Indeed, this is exactly how Lists work in a purely functional and lazily evaluated language like *Haskell*, or specific objects like ~LazyList~ work in *Scala*.
+
 
 * Infinite sequences
 
@@ -92,36 +137,66 @@ the arguments are evaluated as soon as they are passed through a function, befor
 
 - Lazyness provides a solution to this!
 
-** Lazy lists
+** Example: The fibonacci sequence
+
+Consider a program you've likely coded up before; the fibonacci sequence. Here is a relatively standard  way of doing it, in Scala.
 
 #+begin_src scala
+  import scala.collection.mutable.ListBuffer
 
-  val fibs: LazyList[Int] = 0 #:: fibs.scanLeft(1)(_ + _)
-  // val fibs: LazyList[Int] = LazyList(<not computed>)
+  val n = 10
+  val fibs1 = new ListBuffer[Long]
+  fibs1 += (0,1)
+  for (i <- (1 to n)){
+    fibs1 += fibs1(fibs1.size-1) + fibs1(fibs1.size-2)
+  }
 
+  fibs1
+  //res0: ListBuffer(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89)
 #+end_src
 
-We can take as many as we want; ~fibs~ represents the whole infinite sequence of fibonacci numbers!
+
+
+** Example: The fibonacci sequence
 
 #+begin_src scala
-  fibs(30)
-  // val res0: Int = 832040
+  def fibFrom(a: Long, b: Long): LazyList[Long] = a #:: nextfib(b, a + b)
+
+  val fibs2 = fibFrom(0,1)
+  //val fibs2: LazyList[Long] = LazyList(<not computed>)
+#+end_src
+~fibs2~ represents the whole infinite sequence of fibonacci numbers! To get the nth value, is to simply extract it from the infinite list
+#+begin_src scala
+  fibs2(30)
+  // val res0: Long = 832040
+#+end_src
+or we can take the first n elements of the list
+#+begin_src scala
+  fibs.take(30).toList
+  //val res12: List[Long] = List(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229)
 #+end_src
 
-or take the first n elements of the list
+** Example: The Fibonacci Sequence
+
+We can also clean up the code quite significantly using some built-in methods
 
 #+begin_src scala
-  fibs.take(30).toLits
-  //val res1: List[Int] = List(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229)
+  lazy val fib: LazyList[Long] = 0L #:: 1L #:: fib.zip(fib.tail).map { case (a, b) => a + b }
 #+end_src
 
-** In Statistics
+But this might look a bit intimidating to some. In Haskell, this is cleaner;
+
+#+begin_src haskell
+   fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+#+end_src
+
+** Example: MCMC
 
 In statistics so many things are infinite sequences MCMC algorithms come to mind in particular.
 
 Imagine code where a fixed sample size is not needed; we can represent infinitely many samples in a variable, and always just pick out however many we may want!
 
-*** MCMC Algorithms
+** Example: MCMC
 
 For example, lets take a simple metropolis sampler. For the simple case of a Gaussian target $\pi \sim\mathcal N(0,\Sigma)$ with mean $0$ and variance $\Sigma=M^TM$ where $M_{ij}\sim\mathcal N(0,1)$, and we use the proposal as uncorrelated gaussians, $q_n(x,\cdot)\sim\mathcal N_p(x, \lambda^2 Id)$.
 
@@ -150,7 +225,7 @@ We can construct a metropolis sampler for this as follows;
   }
 #+end_src
 
-*** MCMC Algorithms (continued)
+** Example: MCMC
 
 Once we've chosen a, initial value, we can the define the rest of the infinite chain using a operation ~LazyList.iterate~ in scala
 
@@ -158,8 +233,24 @@ Once we've chosen a, initial value, we can the define the rest of the infinite c
   LazyList.iterate(x0)((x:DenseVector[Double]) => one_MRTH_step(x,q,r)
 #+end_src
 
-*** MCMC Algorithms (continued)
+** Example: MCMC
 
-By can, of course, do the usual stuff on this list
+By can, of course, do the usual stuff on this list, like compute estimates
+
+#+begin_src scala
+
+  val n = 100000
+  
+  val xsum = mrth_sample.take(n).foldLeft(DenseVector.zeros[Double](d))(_+_)
+  val xxtvals = mrth_sample.map((x: DenseVector[Double]) => x * x.t)
+  val xxtsum = xxtvals.take(n).foldLeft(DenseMatrix.zeros[Double](d,d))(_+_)
+
+  val sample_var = (xxtsum :*= 1/n.toDouble) - ((xsum * xsum.t) :*= 1/(n*n).toDouble)
+  // 0.5798798360620974    -0.25268806862366644  -0.23151583712649304  
+  // -0.25268806862366644  2.3148740685967075    1.5463449917637646    
+  // -0.23151583712649304  1.5463449917637646    1.5615727189017325 
+  #+end_src
+
+or take plots
 
 [[file:./Scala_source/MHplot.png]]

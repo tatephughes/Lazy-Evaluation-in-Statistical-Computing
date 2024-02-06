@@ -44,6 +44,11 @@ def plotter(sample: LazyList[DenseVector[Double]],
 
 @main def run(): Unit =
 
+
+  // Fibonacci Sequence
+  //val fibs: LazyList[Int] = 0 #:: fibs.scanLeft(1)(_ + _)
+
+  // Metropolis-Hastings
   val d = 3
 
   val data = Gaussian(0,1).sample(d*d).toArray.grouped(d).toArray
@@ -58,4 +63,16 @@ def plotter(sample: LazyList[DenseVector[Double]],
 
   print(mrth_sample(30))
 
+  // Computing the 100000th sample 
+  val n = 100000
+
+  val xsum = mrth_sample.take(n).foldLeft(DenseVector.zeros[Double](d))(_+_)
+  val xxtvals = mrth_sample.map((x: DenseVector[Double]) => x * x.t)
+  val xxtsum = xxtvals.take(n).foldLeft(DenseMatrix.zeros[Double](d,d))(_+_)
+  
+  val sample_var = (xxtsum :*= 1/n.toDouble) - ((xsum * xsum.t) :*= 1/(n*n).toDouble)
+
+  print(sample_var)
+
+  // Plotting the first 10000 points
   plotter(mrth_sample, 100000, 1, "MHplot.png")
