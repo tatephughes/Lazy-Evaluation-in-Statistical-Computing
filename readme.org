@@ -254,3 +254,9 @@ By can, of course, do the usual stuff on this list, like compute estimates
 or take plots
 
 [[file:./Scala_source/MHplot.png]]
+
+* And that's all I wanted to talk about!
+
+The scala and python code for the presentation, as well as the presentation itself, is available on my github, [[https://github.com/tatephughes/Lazy-Evaluation-in-Statistical-Computing][github.com/tatephughes/]].
+
+I would encouredge you to take a look at Haskell; it can be tough to get your head around and realistically isn't practical for statistical modelling, but it teaches some valuable lessons which could prove helpful for programming in the languages you do use!
