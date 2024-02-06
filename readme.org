@@ -229,7 +229,7 @@ We can construct a metropolis sampler for this as follows;
 
 Once we've chosen a, initial value, we can the define the rest of the infinite chain using a operation ~LazyList.iterate~ in scala
 
-#+begin_src scala
+#+begin_src scala :tangle no
   LazyList.iterate(x0)((x:DenseVector[Double]) => one_MRTH_step(x,q,r)
 #+end_src
 
