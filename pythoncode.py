@@ -1,5 +1,3 @@
-bool_func_1() or bool_func_2()
-
 def bool_func_1():
    print("bool_func_1 was evaluated")
    return True

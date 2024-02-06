@@ -30,7 +30,7 @@ Let ~f~ be some function. The function is
 
 Lets say we have two functions, ~bool_func_1~ and ~bool_func_2~ which output booleans, and we need at least of of them to be true in order to proceed. We would obvously do an ~Or~ statement, something like
 
-#+begin_src python :results none
+#+begin_src python :results none :tangle no
   bool_func_1() or bool_func_2()
 #+end_src
 
