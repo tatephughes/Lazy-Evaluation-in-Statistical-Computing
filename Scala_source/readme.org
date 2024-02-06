@@ -1,0 +1,3 @@
+#+TITLE: Metropolis sampler in Scala
+
+This is an example of how one might implement a Metropolis sampler in a functional style in scala.
