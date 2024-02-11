@@ -1,9 +1,17 @@
-#+TITLE: How to be Lazy (and improve you Statistical programming while doing it)
+#+TITLE: How to be Lazy
+#+SUBTITLE: (and improve you Statistical programming while doing it)
 #+AUTHOR: Evan Tate Paterson Hughes
 #+PROPERTY: header-args :tangle pythoncode.py
 #+auto_tangle: t
 #+BIBLIOGRAPHY: Bibliography.bib
 #+LATEX_HEADER: \usepackage{amsmath,amsfonts,amssymb}
+#+MACRO: colour @@html:<font color="$1">$2</font>@@
+
+:REVEAL_PROPERTIES:
+#+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js
+#+REVEAL_THEME: solarized
+#+OPTIONS: timestamp:nil toc:0 num:nil
+:END:
 
 * Ok, I may have lied a little bit
 
@@ -26,9 +34,9 @@ Let ~f~ be some function. The function is
 - *strict* if every expression within is evaluated when ~f~ is evaluated
 - *non-strict* (lazy) if at least one of the expressions within ~f~ might not be evaluated upon evaluating ~f~.
 
-** Example 1)
+** Example
 
-Lets say we have two functions, ~bool_func_1~ and ~bool_func_2~ which output booleans, and we need at least of of them to be true in order to proceed. We would obvously do an ~Or~ statement, something like
+Lets say we have two functions, ~bool_func_1~ and ~bool_func_2~ which output booleans. We want to do an ~Or~ statement, something like
 
 #+begin_src python :results none :tangle no
   bool_func_1() or bool_func_2()
@@ -36,7 +44,7 @@ Lets say we have two functions, ~bool_func_1~ and ~bool_func_2~ which output boo
 
 But if ~bool_func_1()~ evaluates to ~True~, then we don't need to compute ~bool_func_2~ at all, since we already know that the whole expression is ~True~!
  
-** Example 1)
+** Example
 
 Consider the function ~|~ in python, which can be used for ~Or~ statements. This operator is _not_ lazy!
 
@@ -52,20 +60,20 @@ We can demonstrate this by using booleans with print statements embedded
      return False
 #+end_src
 
-** Example 1)
+** Example
 
-#+begin_src python :session example :results output
+#+begin_src python :session example :results output :exports both
   result = bool_func_1() | bool_func_2()
   print(result)
 #+end_src
 
 The ~|~ operator in python is not lazy!
 
-** Example 1)
+** Example
 
 However, the ~or~ operator is lazy (yes, there is a difference between these two!)
 
-#+begin_src python :session example :results output
+#+begin_src python :session example :results output :exports both
   result = bool_func_1() or bool_func_2()
   print(result)
 #+end_src
@@ -190,7 +198,7 @@ But this might look a bit intimidating to some. In Haskell, this is cleaner;
    fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 #+end_src
 
-** Example: MCMC
+* Lazy Stochastic Processes
 
 In statistics so many things are infinite sequences MCMC algorithms come to mind in particular.
 
@@ -201,23 +209,21 @@ Imagine code where a fixed sample size is not needed; we can represent infinitel
 For example, lets take a simple metropolis sampler. For the simple case of a Gaussian target $\pi \sim\mathcal N(0,\Sigma)$ with mean $0$ and variance $\Sigma=M^TM$ where $M_{ij}\sim\mathcal N(0,1)$, and we use the proposal as uncorrelated gaussians, $q_n(x,\cdot)\sim\mathcal N_p(x, \lambda^2 Id)$.
 
 
-We can construct a metropolis sampler for this as follows;
+In Scala, a Metropolis-Hastings sampler for this might look like this;
+
+** Example: MCMC
 
 #+begin_src scala :tangle no
-  import breeze.linalg._
-  import breeze.stats.distributions._
-  import breeze.stats.distributions.Rand.FixedSeed.randBasis
-  import scala.math
-  import java.util.concurrent.ThreadLocalRandom
-  def rng = ThreadLocalRandom.current()
 
   def one_MRTH_step(x: DenseVector[Double],
     r: DenseMatrix[Double],
     q: DenseMatrix[Double]
   ): DenseVector[Double] = {
 
-    val proposed_move = x.map((xi:Double) => Gaussian(xi, 0.01/d.toDouble).sample())
-    val alpha = 0.5 * ((x.t * (r \ (q.t * x))) - (proposed_move.t * (r \ (q.t * proposed_move))))
+    val proposed_move = x.map((xi:Double)
+                        => Gaussian(xi, 0.01/d.toDouble).sample())
+    val alpha = 0.5 * ((x.t * (r \ (q.t * x)))
+                - (proposed_move.t * (r \ (q.t * proposed_move))))
     val log_acceptance_prob = math.min(0.0, alpha)
     val u = rng.nextDouble()
     if (math.log(u) < log_acceptance_prob) then proposed_move else x
@@ -230,7 +236,8 @@ We can construct a metropolis sampler for this as follows;
 Once we've chosen a, initial value, we can the define the rest of the infinite chain using a operation ~LazyList.iterate~ in scala
 
 #+begin_src scala :tangle no
-  LazyList.iterate(x0)((x:DenseVector[Double]) => one_MRTH_step(x,q,r)
+    LazyList.iterate(x0)(
+      (x:DenseVector[Double]) => one_MRTH_step(x,q,r))
 #+end_src
 
 ** Example: MCMC
@@ -239,19 +246,31 @@ By can, of course, do the usual stuff on this list, like compute estimates
 
 #+begin_src scala :tangle no
 
-  val n = 100000
-  
-  val xsum = mrth_sample.take(n).foldLeft(DenseVector.zeros[Double](d))(_+_)
-  val xxtvals = mrth_sample.map((x: DenseVector[Double]) => x * x.t)
-  val xxtsum = xxtvals.take(n).foldLeft(DenseMatrix.zeros[Double](d,d))(_+_)
+         val n = 100000
+         
+         val xsum = mrth_sample.take(n).foldLeft(
+           DenseVector.zeros[Double](d))(_+_)
+         val xxtvals = mrth_sample.map(
+           (x: DenseVector[Double]) => x * x.t)
+         val xxtsum = xxtvals.take(n).foldLeft(
+           DenseMatrix.zeros[Double](d,d))(_+_)
 
-  val sample_var = (xxtsum :*= 1/n.toDouble) - ((xsum * xsum.t) :*= 1/(n*n).toDouble)
-  // 0.5798798360620974    -0.25268806862366644  -0.23151583712649304  
-  // -0.25268806862366644  2.3148740685967075    1.5463449917637646    
-  // -0.23151583712649304  1.5463449917637646    1.5615727189017325 
+         val sample_var = (xxtsum :*= 1/n.toDouble)
+                          - ((xsum * xsum.t) :*= 1/(n*n).toDouble)
+         // 0.5798798360620974    -0.25268806862366644  -0.23151583712649304  
+         // -0.25268806862366644  2.3148740685967075    1.5463449917637646    
+         // -0.23151583712649304  1.5463449917637646    1.5615727189017325 
   #+end_src
 
-or take plots
+** Example: MCMC
+
+And we can plot things as normal (here I'm using my own ~plotter~ function to simplify things);
+
+(oops thats not the right function)
+
+#+begin_src scala
+plotter(amrth_sample.map((x: AM_state) => x.x), n, 0, "./MHplot.png")
+#+end_src
 
 [[file:./Scala_source/MHplot.png]]
 

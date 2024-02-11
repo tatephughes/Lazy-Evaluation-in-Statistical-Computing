@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>How to be Lazy</title>
+<meta name="author" content="Evan Tate Paterson Hughes"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.css"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/theme/solarized.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'https://cdn.jsdelivr.net/npm/reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">How to be Lazy</h1><p class="subtitle">(and improve you Statistical programming while doing it)</p>
+<h2 class="author">Evan Tate Paterson Hughes</h2>
+</section>
+
+<section>
+<section id="slide-org7427562">
+<h2 id="org7427562">Ok, I may have lied a little bit</h2>
+<p>
+This presentation isn't about you being lazy, it's about your programs being lazy: <b>Lazy Evaluation</b>.
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org2b4ca5f">
+<h2 id="org2b4ca5f">What is Lazy evaluation?</h2>
+<p>
+Roughly speaking, we make sure our programs only actually evaluate anything when we absolutely need to.
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-python"   ><code trim><span style="color: #8ac6f2; font-weight: bold; font-style: italic;">if</span> condition:
+  really_easy_computation()
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">else</span>:
+  really_hard_computation()
+</code></pre>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-org406040e">
+<h2 id="org406040e">Definition and example</h2>
+<p>
+Let <code>f</code> be some function. The function is 
+</p>
+<ul>
+<li><b>strict</b> if every expression within is evaluated when <code>f</code> is evaluated</li>
+<li><b>non-strict</b> (lazy) if at least one of the expressions within <code>f</code> might not be evaluated upon evaluating <code>f</code>.</li>
+
+</ul>
+</section>
+<section id="slide-org4f6289d">
+<h3 id="org4f6289d">Example</h3>
+<p>
+Lets say we have two functions, <code>bool_func_1</code> and <code>bool_func_2</code> which output booleans. We want to do an <code>Or</code> statement, something like
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-python"   ><code trim>bool_func_1() <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">or</span> bool_func_2()
+</code></pre>
+</div>
+
+<p>
+But if <code>bool_func_1()</code> evaluates to <code>True</code>, then we don't need to compute <code>bool_func_2</code> at all, since we already know that the whole expression is <code>True</code>!
+</p>
+</section>
+<section id="slide-org31dab88">
+<h3 id="org31dab88">Example</h3>
+<p>
+Consider the function <code>|</code> in python, which can be used for <code>Or</code> statements. This operator is <span class="underline">not</span> lazy!
+</p>
+
+<p>
+We can demonstrate this by using booleans with print statements embedded
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-python"   ><code trim><span style="color: #8ac6f2; font-weight: bold; font-style: italic;">def</span> <span style="color: #cae682;">bool_func_1</span>():
+   <span style="color: #e5786d;">print</span>(<span style="color: #95e454;">"bool_func_1 was evaluated"</span>)
+   <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">return</span> <span style="color: #e5786d;">True</span>
+
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">def</span> <span style="color: #cae682;">bool_func_2</span>():
+   <span style="color: #e5786d;">print</span>(<span style="color: #95e454;">"bool_func_2 was evaluated"</span>)
+   <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">return</span> <span style="color: #e5786d;">False</span>
+</code></pre>
+</div>
+</section>
+<section id="slide-org95c1f23">
+<h3 id="org95c1f23">Example</h3>
+<div class="org-src-container">
+
+<pre  class="src src-python"   ><code trim><span style="color: #cae682;">result</span> = bool_func_1() | bool_func_2()
+<span style="color: #e5786d;">print</span>(result)
+</code></pre>
+</div>
+
+<pre class="example">
+bool_func_1 was evaluated
+bool_func_2 was evaluated
+True
+</pre>
+
+
+<p>
+The <code>|</code> operator in python is not lazy!
+</p>
+</section>
+<section id="slide-org6aae175">
+<h3 id="org6aae175">Example</h3>
+<p>
+However, the <code>or</code> operator is lazy (yes, there is a difference between these two!)
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-python"   ><code trim><span style="color: #cae682;">result</span> = bool_func_1() <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">or</span> bool_func_2()
+<span style="color: #e5786d;">print</span>(result)
+</code></pre>
+</div>
+
+<pre class="example">
+bool_func_1 was evaluated
+True
+</pre>
+
+
+<p>
+It is often said that the <code>or</code> operator is <i>short-circuiting</i>, while <code>|</code> is not; what this really means is that <code>or</code> is lazy!
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org607a50e">
+<h2 id="org607a50e">Never repeat work</h2>
+<p>
+Let's quickly go back to the motivating example, but let's also place some dependance on a variable <code>x</code>;
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-python"   ><code trim><span style="color: #8ac6f2; font-weight: bold; font-style: italic;">if</span> condition(x):
+  really_easy_computation(x)
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">else</span>:
+  really_hard_computation(x)
+</code></pre>
+</div>
+
+<p>
+Lets say <code>condition(x)</code> really was <code>False</code>, and so we <span class="underline">have</span> to do the hard computation, <code>really_hard_computation(x)</code>. Another principle often combined with Lazy evaluation is that computation is never repeated unnecessarily; this is done by <i>memoization</i>.
+</p>
+</section>
+<section id="slide-orga2605da">
+<h3 id="orga2605da">Memoization</h3>
+<p>
+Once <code>really_hard_computation(x)</code> is computed, it's value is stored in a lookup table.
+This means that, if for some unpredictable reason, we have to compute <code>really_hard_computation</code> again, the program will fist look at the table to see whether the computation has already been done, and if it has, will simply use the value stored in memory.
+</p>
+
+<p>
+For this to work completely we need <i>referential transparency</i>, which is another can of worms, and can be somewhat painful to work around in statistical settings.
+</p>
+</section>
+</section>
+<section>
+<section id="slide-orgb1456de">
+<h2 id="orgb1456de">The problem with the programming languages you are used to</h2>
+<p>
+There are other functions in python which are lazy, for example, <code>and</code> is (but <code>&amp;</code> is not), and any <code>if</code> <code>else</code> statements only compute what is needed.
+</p>
+</section>
+<section id="slide-org19495d1">
+<h3 id="org19495d1">Example: (Not so lazy) Functions</h3>
+<p>
+However, the arguments passed into user-defined functions are always evaluated in python;
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-python"   ><code trim><span style="color: #8ac6f2; font-weight: bold; font-style: italic;">def</span> <span style="color: #cae682;">my_or_function</span>(bool1,bool2): <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">return</span> bool1 <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">or</span> bool2 
+</code></pre>
+</div>
+
+<p>
+We know <code>or</code> is lazy, so passing through <code>bool_func_1, bool_func_2</code> should only evaluate <code>bool_func_1</code> and then 'short circuit right'?
+</p>
+</section>
+<section id="slide-org141addf">
+<h3 id="org141addf">Example: (Not so lazy) Functions</h3>
+<div class="org-src-container">
+
+<pre  class="src src-python"   ><code trim><span style="color: #e5786d;">print</span>(my_or_function(bool_func_1(),bool_func_2()))
+</code></pre>
+</div>
+
+<p>
+the arguments are evaluated as soon as they are passed through a function, before the function is even run!
+</p>
+</section>
+<section id="slide-orgedca8c4">
+<h3 id="orgedca8c4">Example: Range</h3>
+<p>
+Say we want to do something over a range in python, but there was some <code>break</code> condition somewhere;
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-python"   ><code trim><span style="color: #8ac6f2; font-weight: bold; font-style: italic;">for</span> i <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">in</span> <span style="color: #e5786d;">range</span>(1000000)
+  do_something_interesting
+  <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">if</span> condition: <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">break</span>
+</code></pre>
+</div>
+
+<p>
+When <code>range(1000000)</code> is called, the entire list <code>[1,2,3,...,1000000]</code> is stored in memory, because <code>range</code> is not lazy!
+</p>
+</section>
+<section id="slide-org1f8e187">
+<h3 id="org1f8e187">Example: Range</h3>
+<p>
+If the condition ended up being true at the 100th loop, then we really didn't need to store the other 999900 integers. If <code>range</code> was truly lazy, then nothing would be stored in memory until it was actually used, and in memory the list might appear like <code>1,2,3,...,99,100,&lt;not computed&gt;</code>. Indeed, this is exactly how Lists work in a purely functional and lazily evaluated language like <b>Haskell</b>, or specific objects like <code>LazyList</code> work in <b>Scala</b>.
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org995a95b">
+<h2 id="org995a95b">Infinite sequences</h2>
+<ul>
+<li>We deal a lot with infinite sequences in statistics</li>
+
+<li>Why can't we represent them fully in code?</li>
+
+<li>Lazyness provides a solution to this!</li>
+
+</ul>
+</section>
+<section id="slide-orga1fd9ee">
+<h3 id="orga1fd9ee">Example: The Fibonacci sequence</h3>
+<p>
+Consider a program you've likely coded up before; the fibonacci sequence. Here is a relatively standard  way of doing it, in Scala.
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-scala"   ><code trim><span style="color: #8ac6f2; font-weight: bold; font-style: italic;">import</span> scala.collection.mutable.<span style="color: #e5786d;">ListBuffer</span>
+
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">n</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> <span style="color: #e5786d;">10</span>
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">fibs1</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">new</span> <span style="color: #92a65e; font-weight: bold;">ListBuffer</span>[<span style="color: #e5786d;">Long</span>]
+fibs1 += (<span style="color: #e5786d;">0</span>,<span style="color: #e5786d;">1</span>)
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">for</span> (i <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">&lt;-</span> (<span style="color: #e5786d;">1</span> to n)){
+  fibs1 += fibs1(fibs1.size-1) + fibs1(fibs1.size-2)
+}
+
+fibs1
+<span style="color: #99968b; font-style: italic;">//</span><span style="color: #99968b; font-style: italic;">res0: ListBuffer(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89)</span>
+</code></pre>
+</div>
+</section>
+<section id="slide-org2f2d274">
+<h3 id="org2f2d274">Example: The Fibonacci sequence</h3>
+<div class="org-src-container">
+
+<pre  class="src src-scala"   ><code trim><span style="color: #8ac6f2; font-weight: bold; font-style: italic;">def</span> <span style="color: #cae682;">fibFrom</span>(a<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span> <span style="color: #92a65e; font-weight: bold;">Long</span>, b<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span> <span style="color: #92a65e; font-weight: bold;">Long</span>)<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span> <span style="color: #92a65e; font-weight: bold;">LazyList</span>[<span style="color: #e5786d;">Long</span>] <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> a #:: nextfib(b, a + b)
+
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">fibs2</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> fibFrom(<span style="color: #e5786d;">0</span>,<span style="color: #e5786d;">1</span>)
+<span style="color: #99968b; font-style: italic;">//</span><span style="color: #99968b; font-style: italic;">val fibs2: LazyList[Long] = LazyList(&lt;not computed&gt;)</span>
+</code></pre>
+</div>
+<p>
+<code>fibs2</code> represents the whole infinite sequence of fibonacci numbers! To get the nth value, is to simply extract it from the infinite list
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-scala"   ><code trim>fibs2(<span style="color: #e5786d;">30</span>)
+<span style="color: #99968b; font-style: italic;">// </span><span style="color: #99968b; font-style: italic;">val res0: Long = 832040</span>
+</code></pre>
+</div>
+<p>
+or we can take the first n elements of the list
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-scala"   ><code trim>fibs.take(<span style="color: #e5786d;">30</span>).toList
+<span style="color: #99968b; font-style: italic;">//</span><span style="color: #99968b; font-style: italic;">val res12: List[Long] = List(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229)</span>
+</code></pre>
+</div>
+</section>
+<section id="slide-orge6551d0">
+<h3 id="orge6551d0">Example: The Fibonacci Sequence</h3>
+<p>
+We can also clean up the code quite significantly using some built-in methods
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-scala"   ><code trim><span style="color: #e5786d;">lazy</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">fib</span><span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span> <span style="color: #92a65e; font-weight: bold;">LazyList</span>[<span style="color: #e5786d;">Long</span>] <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> <span style="color: #e5786d;">0L</span> #:: <span style="color: #e5786d;">1L</span> #:: fib.zip(fib.tail).map { <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">case</span> (<span style="color: #cae682;">a</span>, <span style="color: #cae682;">b</span>) <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=&gt;</span> a + b }
+</code></pre>
+</div>
+
+<p>
+But this might look a bit intimidating to some. In Haskell, this is cleaner;
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-haskell"   ><code trim><span style="color: #cae682;">fibs</span> <span style="color: #cae682;">=</span> 0 <span style="color: #92a65e; font-weight: bold;">:</span> 1 <span style="color: #92a65e; font-weight: bold;">:</span> zipWith (<span style="color: #cae682;">+</span>) fibs (tail fibs)
+</code></pre>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-org39f7571">
+<h2 id="org39f7571">Lazy Stochastic Processes</h2>
+<p>
+In statistics so many things are infinite sequences MCMC algorithms come to mind in particular.
+</p>
+
+<p>
+Imagine code where a fixed sample size is not needed; we can represent infinitely many samples in a variable, and always just pick out however many we may want!
+</p>
+</section>
+<section id="slide-org91a65de">
+<h3 id="org91a65de">Example: MCMC</h3>
+<p>
+For example, lets take a simple metropolis sampler. For the simple case of a Gaussian target \(\pi \sim\mathcal N(0,\Sigma)\) with mean \(0\) and variance \(\Sigma=M^TM\) where \(M_{ij}\sim\mathcal N(0,1)\), and we use the proposal as uncorrelated gaussians, \(q_n(x,\cdot)\sim\mathcal N_p(x, \lambda^2 Id)\).
+</p>
+
+
+<p>
+In Scala, a Metropolis-Hastings sampler for this might look like this;
+</p>
+</section>
+<section id="slide-org44a64ea">
+<h3 id="org44a64ea">Example: MCMC</h3>
+<div class="org-src-container">
+
+<pre  class="src src-scala"   ><code trim>
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">def</span> <span style="color: #cae682;">one_MRTH_step</span>(x<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span> <span style="color: #92a65e; font-weight: bold;">DenseVector</span>[<span style="color: #e5786d;">Double</span>],
+  r<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span> <span style="color: #92a65e; font-weight: bold;">DenseMatrix</span>[<span style="color: #e5786d;">Double</span>],
+  q<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span> <span style="color: #92a65e; font-weight: bold;">DenseMatrix</span>[<span style="color: #e5786d;">Double</span>]
+)<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span> <span style="color: #92a65e; font-weight: bold;">DenseVector</span>[<span style="color: #e5786d;">Double</span>] <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> {
+
+  <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">proposed_move</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> x.map((xi<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span><span style="color: #92a65e; font-weight: bold;">Double</span>)
+                      <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=&gt;</span> <span style="color: #e5786d;">Gaussian</span>(xi, <span style="color: #e5786d;">0.01</span>/d.toDouble).sample())
+  <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">alpha</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> <span style="color: #e5786d;">0.5</span> * ((x.t * (r \ (q.t * x)))
+              - (proposed_move.t * (r \ (q.t * proposed_move))))
+  <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">log_acceptance_prob</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> math.min(<span style="color: #e5786d;">0.0</span>, alpha)
+  <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">u</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> rng.nextDouble()
+  <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">if</span> (math.log(u) &lt; log_acceptance_prob) <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">then</span> proposed_move <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">else</span> x
+
+}
+</code></pre>
+</div>
+</section>
+<section id="slide-org2676749">
+<h3 id="org2676749">Example: MCMC</h3>
+<p>
+Once we've chosen a, initial value, we can the define the rest of the infinite chain using a operation <code>LazyList.iterate</code> in scala
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-scala"   ><code trim><span style="color: #e5786d;">LazyList</span>.iterate(x0)(
+  (x<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span><span style="color: #92a65e; font-weight: bold;">DenseVector</span>[<span style="color: #e5786d;">Double</span>]) <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=&gt;</span> one_MRTH_step(x,q,r))
+</code></pre>
+</div>
+</section>
+<section id="slide-orgc4bca4b">
+<h3 id="orgc4bca4b">Example: MCMC</h3>
+<p>
+By can, of course, do the usual stuff on this list, like compute estimates
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-scala"   ><code trim>
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">n</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> <span style="color: #e5786d;">100000</span>
+
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">xsum</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> mrth_sample.take(n).foldLeft(
+  <span style="color: #e5786d;">DenseVector</span>.zeros[<span style="color: #e5786d;">Double</span>](d))(<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">_</span>+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">_</span>)
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">xxtvals</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> mrth_sample.map(
+  (x<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span> <span style="color: #92a65e; font-weight: bold;">DenseVector</span>[<span style="color: #e5786d;">Double</span>]) <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=&gt;</span> x * x.t)
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">xxtsum</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> xxtvals.take(n).foldLeft(
+  <span style="color: #e5786d;">DenseMatrix</span>.zeros[<span style="color: #e5786d;">Double</span>](d,d))(<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">_</span>+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">_</span>)
+
+<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">val</span> <span style="color: #cae682;">sample_var</span> <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=</span> (xxtsum :*= <span style="color: #e5786d;">1</span>/n.toDouble)
+                 - ((xsum * xsum.t) :*= <span style="color: #e5786d;">1</span>/(n*n).toDouble)
+<span style="color: #99968b; font-style: italic;">// </span><span style="color: #99968b; font-style: italic;">0.5798798360620974    -0.25268806862366644  -0.23151583712649304  </span>
+<span style="color: #99968b; font-style: italic;">// </span><span style="color: #99968b; font-style: italic;">-0.25268806862366644  2.3148740685967075    1.5463449917637646    </span>
+<span style="color: #99968b; font-style: italic;">// </span><span style="color: #99968b; font-style: italic;">-0.23151583712649304  1.5463449917637646    1.5615727189017325 </span>
+</code></pre>
+</div>
+</section>
+<section id="slide-org644c20d">
+<h3 id="org644c20d">Example: MCMC</h3>
+<p>
+And we can plot things as normal (here I'm using my own <code>plotter</code> function to simplify things);
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-scala"   ><code trim>plotter(amrth_sample.map((x<span style="color: #8ac6f2; font-weight: bold; font-style: italic;">:</span> <span style="color: #92a65e; font-weight: bold;">AM_state</span>) <span style="color: #8ac6f2; font-weight: bold; font-style: italic;">=&gt;</span> x.x), n, <span style="color: #e5786d;">0</span>, <span style="color: #95e454;">"./MHplot.png"</span>)
+</code></pre>
+</div>
+
+
+<div id="org7f0f0ab" class="figure">
+<p><img src="./Scala_source/MHplot.png" alt="MHplot.png" />
+</p>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-org73a0f2a">
+<h2 id="org73a0f2a">And that's all I wanted to talk about!</h2>
+<p>
+The scala and python code for the presentation, as well as the presentation itself, is available on my github, <a href="https://github.com/tatephughes/Lazy-Evaluation-in-Statistical-Computing">github.com/tatephughes/</a>.
+</p>
+
+<p>
+I would encouredge you to take a look at Haskell; it can be tough to get your head around and realistically isn't practical for statistical modelling, but it teaches some valuable lessons which could prove helpful for programming in the languages you do use!
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+
+});
+
+</script>
+</body>
+</html>

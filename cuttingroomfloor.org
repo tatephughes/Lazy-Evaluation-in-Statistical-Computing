@@ -12,7 +12,7 @@
     inverseCDF :: Double -> Double
     inverseCDF p = quantile (normalDistr 0.0 1.0) p
   :}
-    
+  
   :{
     mh_step :: (Matrix Double) -> (Matrix Double)
     mh_step x = fromLists $ do
@@ -20,9 +20,9 @@
        b <- getRandomR (0.0,1.0)
        c <- getRandomR (0.0,1.0)
        u <- getRandomR (0.0,1.0)
-       --let prop_move = fromLists [(map (\lam -> (inverseCDF lam)) [a,b,c])]
-       --    log_acceptance_prob = -100.0
-       --return (if ((log u) < log_acceptance_prob) then prop_move else x)
+       let prop_move = fromLists [(map (\lam -> (inverseCDF lam)) [a,b,c])]
+           log_acceptance_prob = -100.0
+       return (if ((log u) < log_acceptance_prob) then prop_move else x)
        return $ toList x
   :}
 
