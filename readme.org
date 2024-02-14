@@ -103,6 +103,7 @@ Let's quickly go back to the motivating example, but let's also place some depen
 #+ATTR_REVEAL: :frag t
 Lets say '~condition(x)~' really was '~False~', and so we _have_ to do the hard computation, '~really_hard_computation(x)~'.
 
+#+ATTR_REVEAL: :frag t
 What if, in the future, '~really_hard_computation(x)~' is called again?
 
 ** Memoization

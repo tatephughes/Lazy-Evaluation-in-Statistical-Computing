@@ -34,16 +34,16 @@
 </section>
 
 <section>
-<section id="slide-orgfa5388f">
-<h2 id="orgfa5388f">Ok, I may have lied a little bit</h2>
+<section id="slide-org2d12534">
+<h2 id="org2d12534">Ok, I may have lied a little bit</h2>
 <p>
 This presentation isn't about you being lazy, it's about your programs being lazy: <b>Lazy Evaluation</b>.
 </p>
 </section>
 </section>
 <section>
-<section id="slide-orgb90b0df">
-<h2 id="orgb90b0df">What is Lazy evaluation?</h2>
+<section id="slide-orgc8c7c02">
+<h2 id="orgc8c7c02">What is Lazy evaluation?</h2>
 <p class="fragment">
 Roughly speaking, we make sure our programs only actually evaluate anything when we absolutely need to.
 </p>
@@ -59,8 +59,8 @@ Roughly speaking, we make sure our programs only actually evaluate anything when
 </section>
 </section>
 <section>
-<section id="slide-orgad6340a">
-<h2 id="orgad6340a">Definition and example</h2>
+<section id="slide-org2ac8001">
+<h2 id="org2ac8001">Definition and example</h2>
 <p class="fragment">
 Let <code>f</code> be some function. The function is
 </p>
@@ -70,8 +70,8 @@ Let <code>f</code> be some function. The function is
 
 </ul>
 </section>
-<section id="slide-org24dd18c">
-<h3 id="org24dd18c">Example</h3>
+<section id="slide-org261819f">
+<h3 id="org261819f">Example</h3>
 <p>
 Lets say we have two functions, '<code>bool_func_1</code>' and '<code>bool_func_2</code>' which output booleans. We want to do an '<code>OR</code>' statement, something like
 </p>
@@ -87,7 +87,7 @@ But if '<code>bool_func_1()</code>' evaluates to '<code>True</code>', then we do
 </p>
 
 </section>
-<section id="slide-org24dd18c-split">
+<section id="slide-org261819f-split">
 
 <p>
 Consider the operator '<code>|</code>' in python, which can be used for '<code>OR</code>' statements. This operator is <span class="underline">not</span> lazy!
@@ -107,7 +107,7 @@ We can demonstrate this by using booleans with print statements embedded
 </div>
 
 </section>
-<section id="slide-org24dd18c-split">
+<section id="slide-org261819f-split">
 
 <div class="org-src-container">
 
@@ -128,7 +128,7 @@ The '<code>|</code>' operator in python is not lazy!
 </p>
 
 </section>
-<section id="slide-org24dd18c-split">
+<section id="slide-org261819f-split">
 
 <p>
 However, the '<code>or</code>' operator is lazy (yes, there is a difference between these two!)
@@ -153,8 +153,8 @@ It is often said that the '<code>or</code>' operator is <i>short-circuiting</i>,
 </section>
 </section>
 <section>
-<section id="slide-orgf46d374">
-<h2 id="orgf46d374">Never repeat work</h2>
+<section id="slide-org6ad26f3">
+<h2 id="org6ad26f3">Never repeat work</h2>
 <p>
 Let's quickly go back to the motivating example, but let's also place some dependance on a variable '<code>x</code>';
 </p>
@@ -172,12 +172,12 @@ Let's quickly go back to the motivating example, but let's also place some depen
 Lets say '<code>condition(x)</code>' really was '<code>False</code>', and so we <span class="underline">have</span> to do the hard computation, '<code>really_hard_computation(x)</code>'.
 </p>
 
-<p>
+<p class="fragment">
 What if, in the future, '<code>really_hard_computation(x)</code>' is called again?
 </p>
 </section>
-<section id="slide-org96060df">
-<h3 id="org96060df">Memoization</h3>
+<section id="slide-org5df1d2f">
+<h3 id="org5df1d2f">Memoization</h3>
 <p class="fragment">
 Once '<code>really_hard_computation(x)</code>' is computed, its value is stored in a lookup table.
 </p>
@@ -228,21 +228,21 @@ Once '<code>really_hard_computation(x)</code>' is computed, its value is stored 
 
 
 </section>
-<section id="slide-org96060df-split">
+<section id="slide-org5df1d2f-split">
 <p>
 For this to work completely we need <i>referential transparency</i>, which is another can of worms, and can be somewhat painful to work around in statistical settings.
 </p>
 </section>
 </section>
 <section>
-<section id="slide-org145d335">
-<h2 id="org145d335">The problem with the programming languages you are used to</h2>
+<section id="slide-orgcdc6508">
+<h2 id="orgcdc6508">The problem with the programming languages you are used to</h2>
 <p>
 There are other functions in python which are lazy, for example, '<code>and</code>' is (but '<code>&amp;</code>' is not), and also any  '<code>if</code>' '<code>else</code>' statements.
 </p>
 </section>
-<section id="slide-org8ac59ad">
-<h3 id="org8ac59ad">Example: (Not so lazy) Functions</h3>
+<section id="slide-org058f225">
+<h3 id="org058f225">Example: (Not so lazy) Functions</h3>
 <p>
 However, the arguments passed into user-defined functions are always evaluated in python;
 </p>
@@ -258,7 +258,7 @@ We know '<code>or</code>' is lazy, so passing through '<code>bool_func_1, bool_f
 </p>
 
 </section>
-<section id="slide-org8ac59ad-split">
+<section id="slide-org058f225-split">
 
 <div class="org-src-container">
 
@@ -277,8 +277,8 @@ True
 the arguments are evaluated as soon as they are passed through a function, before the function is even run!
 </p>
 </section>
-<section id="slide-orgdf76110">
-<h3 id="orgdf76110">Example: Range</h3>
+<section id="slide-orga0eb950">
+<h3 id="orga0eb950">Example: Range</h3>
 <p>
 Say we want to do something over a range in R, but there was some '<code>break</code>' condition somewhere;
 </p>
@@ -296,7 +296,7 @@ When '<code>1:1000000</code>' is called, the entire list '<code>[1,2,3,...,10000
 </p>
 
 </section>
-<section id="slide-orgdf76110-split">
+<section id="slide-orga0eb950-split">
 
 <p>
 If the condition ended up being true at the 100th loop, then we really didn't need to store the other 999900 integers. If range was truly lazy, then nothing would be stored in memory until it was actually used, and in memory the list might appear like '<code>1,2,3,...,99,100,&lt;not computed&gt;</code>'.
@@ -308,8 +308,8 @@ Indeed, this is exactly how Lists work in a purely functional and lazily evaluat
 </section>
 </section>
 <section>
-<section id="slide-orgd96ef56">
-<h2 id="orgd96ef56">Infinite sequences</h2>
+<section id="slide-org09237c7">
+<h2 id="org09237c7">Infinite sequences</h2>
 <ul class="fragment">
 <li>We deal a lot with infinite sequences in statistics</li>
 <li>Why can't we represent them fully in code?</li>
@@ -317,8 +317,8 @@ Indeed, this is exactly how Lists work in a purely functional and lazily evaluat
 
 </ul>
 </section>
-<section id="slide-org222da0e">
-<h3 id="org222da0e">Example: The Fibonacci sequence</h3>
+<section id="slide-orgde3327d">
+<h3 id="orgde3327d">Example: The Fibonacci sequence</h3>
 <p>
 Consider a program you've likely coded up before; the fibonacci sequence. Here is a relatively standard  way of doing it, in Scala.
 </p>
@@ -339,7 +339,7 @@ fibs1
 
 
 </section>
-<section id="slide-org222da0e-split">
+<section id="slide-orgde3327d-split">
 
 <div class="org-src-container">
 
@@ -373,7 +373,7 @@ or we can take the first n elements of the list
 </div>
 
 </section>
-<section id="slide-org222da0e-split">
+<section id="slide-orgde3327d-split">
 
 <p>
 In the programming language Haskell, this can look even cleaner
@@ -398,8 +398,8 @@ x_{n+1}&=x_n+x_{n-1}
 </section>
 </section>
 <section>
-<section id="slide-org424e74a">
-<h2 id="org424e74a">Lazy Stochastic Processes</h2>
+<section id="slide-org015825c">
+<h2 id="org015825c">Lazy Stochastic Processes</h2>
 <p>
 In statistics so many things are infinite sequences MCMC algorithms come to mind in particular.
 </p>
@@ -408,8 +408,8 @@ In statistics so many things are infinite sequences MCMC algorithms come to mind
 Imagine code where a fixed sample size is not needed; we can represent infinitely many samples in a variable, and always just pick out however many we may want!
 </p>
 </section>
-<section id="slide-orgbc6bb6a">
-<h3 id="orgbc6bb6a">Example: MCMC</h3>
+<section id="slide-org4fb31c0">
+<h3 id="org4fb31c0">Example: MCMC</h3>
 <p>
 For example, lets take a simple metropolis sampler. For the simple case of a Gaussian target \(\pi \sim\mathcal N(0,\Sigma)\) with mean \(0\) and variance \(\Sigma=M^TM\) where \(M_{ij}\sim\mathcal N(0,1)\), and we use the proposal as uncorrelated gaussians, \(q_n(x,\cdot)\sim\mathcal N_p(x, \lambda^2 Id)\).
 </p>
@@ -418,7 +418,7 @@ In Scala, a Metropolis-Hastings sampler for this might look like this;
 </p>
 
 </section>
-<section id="slide-orgbc6bb6a-split">
+<section id="slide-org4fb31c0-split">
 
 <div class="org-src-container">
 
@@ -440,7 +440,7 @@ In Scala, a Metropolis-Hastings sampler for this might look like this;
 </div>
 
 </section>
-<section id="slide-orgbc6bb6a-split">
+<section id="slide-org4fb31c0-split">
 
 <p>
 Once we've chosen a, initial value, we can the define the rest of the infinite chain using a operation '<code>LazyList.iterate</code>' in scala
@@ -453,7 +453,7 @@ Once we've chosen a, initial value, we can the define the rest of the infinite c
 </div>
 
 </section>
-<section id="slide-orgbc6bb6a-split">
+<section id="slide-org4fb31c0-split">
 
 <p>
 We can, of course, do the usual stuff on this list, like compute estimates
@@ -480,7 +480,7 @@ We can, of course, do the usual stuff on this list, like compute estimates
 </div>
 
 </section>
-<section id="slide-orgbc6bb6a-split">
+<section id="slide-org4fb31c0-split">
 
 <p>
 And we can plot things as normal (here I'm using my own '<code>plotter</code>' function to simplify things);
@@ -491,15 +491,15 @@ And we can plot things as normal (here I'm using my own '<code>plotter</code>' f
 </code></pre>
 </div>
 
-<div id="orge69bd2b" class="figure">
+<div id="orga5cd606" class="figure">
 <p><img src="./Scala_source/MHplot.png" alt="MHplot.png" class="fragment" />
 </p>
 </div>
 </section>
 </section>
 <section>
-<section id="slide-orge5d159c">
-<h2 id="orge5d159c">And that's all I wanted to talk about</h2>
+<section id="slide-orgfd7d5c1">
+<h2 id="orgfd7d5c1">And that's all I wanted to talk about</h2>
 <p>
 The scala and python code for the presentation, as well as the presentation itself, is available on my github, <a href="https://github.com/tatephughes/Lazy-Evaluation-in-Statistical-Computing">github.com/tatephughes/</a>.
 </p>
