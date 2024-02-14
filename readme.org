@@ -284,7 +284,7 @@ Once we've chosen a, initial value, we can the define the rest of the infinite c
 
 #+REVEAL: split
 
-By can, of course, do the usual stuff on this list, like compute estimates
+We can, of course, do the usual stuff on this list, like compute estimates
 
 #+ATTR_REVEAL: :frag t
 #+begin_src scala :tangle no
