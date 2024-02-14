@@ -36,12 +36,12 @@ Roughly speaking, we make sure our programs only actually evaluate anything when
 #+ATTR_REVEAL: :frag t
 Let ~f~ be some function. The function is
 #+ATTR_REVEAL: :frag t
-- *strict* if every expression within is evaluated when ~f~ is evaluated
-- *non-strict* (lazy) if at least one of the expressions within ~f~ might not be evaluated upon evaluating ~f~.
+- *strict* if every expression within is evaluated when '~f~' is evaluated
+- *non-strict* (lazy) if at least one of the expressions within '~f~' might not be evaluated upon evaluating '~f~'.
 
 ** Example
 
-Lets say we have two functions, ~bool_func_1~ and ~bool_func_2~ which output booleans. We want to do an ~Or~ statement, something like
+Lets say we have two functions, '~bool_func_1~' and '~bool_func_2~' which output booleans. We want to do an '~OR~' statement, something like
 
 #+ATTR_REVEAL: :frag t
 #+begin_src python :results none :tangle no
@@ -49,11 +49,11 @@ Lets say we have two functions, ~bool_func_1~ and ~bool_func_2~ which output boo
 #+end_src
 
 #+ATTR_REVEAL: :frag t
-But if ~bool_func_1()~ evaluates to ~True~, then we don't need to compute ~bool_func_2~ at all, since we already know that the whole expression is ~True~!
+But if '~bool_func_1()~' evaluates to '~True~', then we don't need to compute '~bool_func_2~' at all, since we already know that the whole expression is '~True~'!
 
 #+REVEAL: split
 
-Consider the operator ~|~ in python, which can be used for ~Or~ statements. This operator is _not_ lazy!
+Consider the operator '~|~' in python, which can be used for '~OR~' statements. This operator is _not_ lazy!
 We can demonstrate this by using booleans with print statements embedded
 
 #+ATTR_REVEAL: :frag t
@@ -75,11 +75,11 @@ We can demonstrate this by using booleans with print statements embedded
 #+end_src
 
 #+ATTR_REVEAL: :frag t
-The ~|~ operator in python is not lazy!
+The '~|~' operator in python is not lazy!
   
 #+REVEAL: split
 
-However, the ~or~ operator is lazy (yes, there is a difference between these two!)
+However, the '~or~' operator is lazy (yes, there is a difference between these two!)
 
 #+begin_src python :session example :results output :exports both
   result = bool_func_1() or bool_func_2()
@@ -87,10 +87,10 @@ However, the ~or~ operator is lazy (yes, there is a difference between these two
 #+end_src
 
 #+ATTR_REVEAL: :frag t
-It is often said that the ~or~ operator is /short-circuiting/, while ~|~ is not; what this really means is that ~or~ is lazy!
+It is often said that the '~or~' operator is /short-circuiting/, while '~|~' is not; what this really means is that '~or~' is lazy!
 * Never repeat work
 
-Let's quickly go back to the motivating example, but let's also place some dependance on a variable ~x~;
+Let's quickly go back to the motivating example, but let's also place some dependance on a variable '~x~';
 
 #+ATTR_REVEAL: :frag t
 #+begin_src python :tangle no
@@ -101,20 +101,34 @@ Let's quickly go back to the motivating example, but let's also place some depen
 #+end_src
 
 #+ATTR_REVEAL: :frag t
-Lets say ~condition(x)~ really was ~False~, and so we _have_ to do the hard computation, ~really_hard_computation(x)~. Another principle often combined with Lazy evaluation is that computation is never repeated unnecessarily; this is done by /memoization/.
+Lets say '~condition(x)~' really was '~False~', and so we _have_ to do the hard computation, '~really_hard_computation(x)~'.
+
+What if, in the future, '~really_hard_computation(x)~' is called again?
 
 ** Memoization
 
 #+ATTR_REVEAL: :frag t
-Once ~really_hard_computation(x)~ is computed, it's value is stored in a lookup table.
-This means that, if for some unpredictable reason, we have to compute ~really_hard_computation~ again, the program will fist look at the table to see whether the computation has already been done, and if it has, will simply use the value stored in memory.
+Once '~really_hard_computation(x)~' is computed, its value is stored in a lookup table.
 
 #+ATTR_REVEAL: :frag t
+|-------------------------+-------+----------------|
+| Function                | Value | Result         |
+|-------------------------+-------+----------------|
+| '~really_hard_computation~' | '~x~'     | '~<Result>~'       |
+| '~really_hard_computation~' | '~y~'     | '~<Result>~'       |
+| '~really_hard_computation~' | '~z~'     | '~<Not Computed>~' |
+| $\vdots$                | $\vdots$ | $\vdots$       |
+|-------------------------+-------+----------------|
+
+# the program will fist look at the table to see whether the computation has already been done, and if it has, will simply use the value stored in memory.
+
+
+#+REVEAL: split
 For this to work completely we need /referential transparency/, which is another can of worms, and can be somewhat painful to work around in statistical settings.
 
 * The problem with the programming languages you are used to
 
-There are other functions in python which are lazy, for example, ~and~ is (but ~&~ is not), and any ~if~ ~else~ statements only compute what is needed.
+There are other functions in python which are lazy, for example, '~and~' is (but '~&~' is not), and also any  '~if~' '~else~' statements.
 
 ** Example: (Not so lazy) Functions
 
@@ -122,11 +136,11 @@ However, the arguments passed into user-defined functions are always evaluated i
 
 #+ATTR_REVEAL: :frag t
 #+begin_src python :session example :results none
-  def my_or_function(bool1,bool2): return bool1 or bool2 
+  def my_or_function(bool1, bool2): return bool1 or bool2 
 #+end_src
 
 #+ATTR_REVEAL: :frag t
-We know ~or~ is lazy, so passing through ~bool_func_1, bool_func_2~ should only evaluate ~bool_func_1~ and then 'short circuit' right?
+We know '~or~' is lazy, so passing through '~bool_func_1, bool_func_2~' should only evaluate '~bool_func_1~' and then 'short circuit' right?
 
 #+REVEAL: split
 
@@ -138,7 +152,7 @@ the arguments are evaluated as soon as they are passed through a function, befor
 
 ** Example: Range
 
-Say we want to do something over a range in R, but there was some ~break~ condition somewhere;
+Say we want to do something over a range in R, but there was some '~break~' condition somewhere;
 #+ATTR_REVEAL: :frag t
 #+begin_src r :tangle no :output none :export code
   for i in 1:1000000
@@ -148,14 +162,14 @@ Say we want to do something over a range in R, but there was some ~break~ condit
     }
 #+end_src
 #+ATTR_REVEAL: :frag t
-When ~1:1000000~ is called, the entire list ~[1,2,3,...,1000000]~ is stored in memory, because the range in R is not lazy!
+When '~1:1000000~' is called, the entire list '~[1,2,3,...,1000000]~' is stored in memory, because the range in R is not lazy!
 
 #+REVEAL: split
 
-If the condition ended up being true at the 100th loop, then we really didn't need to store the other 999900 integers. If range was truly lazy, then nothing would be stored in memory until it was actually used, and in memory the list might appear like ~1,2,3,...,99,100,<not computed>~.
+If the condition ended up being true at the 100th loop, then we really didn't need to store the other 999900 integers. If range was truly lazy, then nothing would be stored in memory until it was actually used, and in memory the list might appear like '~1,2,3,...,99,100,<not computed>~'.
 
 #+ATTR_REVEAL: :frag t
-Indeed, this is exactly how Lists work in a purely functional and lazily evaluated language like *Haskell*, or specific objects like ~LazyList~ work in *Scala*, or even the ~range~ operator in python.
+Indeed, this is exactly how Lists work in a purely functional and lazily evaluated language like *Haskell*, or specific objects like '~LazyList~' work in *Scala*, or even the '~range~' operator in python.
 
 * Infinite sequences
 
@@ -170,8 +184,6 @@ Consider a program you've likely coded up before; the fibonacci sequence. Here i
 
 #+ATTR_REVEAL: :frag t
 #+begin_src scala :tangle no
-  import scala.collection.mutable.ListBuffer
-
   val n = 10
   val fibs1 = new ListBuffer[Long]
   fibs1 += (0,1)
@@ -187,13 +199,15 @@ Consider a program you've likely coded up before; the fibonacci sequence. Here i
 #+REVEAL: split
 
 #+begin_src scala :tangle no
-  def fibFrom(a: Long, b: Long): LazyList[Long] = a #:: nextfib(b, a + b)
+  def fibFrom(a: Long, b: Long): LazyList[Long] = {
+    a #:: fibFrom(b, a + b)
+  }
 
   val fibs2 = fibFrom(0,1)
   //val fibs2: LazyList[Long] = LazyList(<not computed>)
 #+end_src
 #+ATTR_REVEAL: :frag t
-~fibs2~ represents the whole infinite sequence of fibonacci numbers! To get the nth value, is to simply extract it from the infinite list
+'~fibs2~' represents the whole infinite sequence of fibonacci numbers! To get the nth value, is to simply extract it from the infinite list
 #+ATTR_REVEAL: :frag t
 #+begin_src scala :tangle no
   fibs2(30)
@@ -202,6 +216,8 @@ Consider a program you've likely coded up before; the fibonacci sequence. Here i
 
 #+ATTR_REVEAL: :frag t
 or we can take the first n elements of the list
+
+#+ATTR_REVEAL: :frag t
 #+begin_src scala :tangle no
   fibs.take(30).toList
   //val res12: List[Long] = List(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811, 514229)
@@ -209,32 +225,21 @@ or we can take the first n elements of the list
 
 #+REVEAL: split
 
-We can also clean up the code quite significantly using some built-in methods
+In the programming language Haskell, this can look even cleaner
+
 
 #+ATTR_REVEAL: :frag t
-#+begin_src scala :tangle no
-  lazy val fib: LazyList[Long] =
-    0L #:: 1L
-    #:: fib.zip(fib.tail).map { case (a, b) => a + b }
+#+begin_src haskell :tangle no
+  fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 #+end_src
 #+ATTR_REVEAL: :frag t
-But this might look a bit intimidating, and admittedly Scala can be unwieldy, but it is very similar to how we would define the Fibonacci sequence in a mathematical language;
+This is very similar to how we would define the Fibonacci sequence in a mathematical language;
 #+ATTR_REVEAL: :frag t
 $$\begin{aligned}
 x_0&=0\\
 x_1&=1\\
 x_{n+1}&=x_n+x_{n-1}
 \end{aligned}$$
-
-#+REVEAL: split
-
-#+ATTR_REVEAL: :frag t
-This is especially clear in the lovely programming language Haskell;
-
-#+ATTR_REVEAL: :frag t
-#+begin_src haskell :tangle no
-   fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
-#+end_src
 
 * Lazy Stochastic Processes
 
@@ -252,7 +257,6 @@ In Scala, a Metropolis-Hastings sampler for this might look like this;
 #+REVEAL: split
 
 #+begin_src scala :tangle no
-
   def one_MH_step(x: DenseVector[Double],
     r: DenseMatrix[Double],
     q: DenseMatrix[Double]
@@ -266,13 +270,12 @@ In Scala, a Metropolis-Hastings sampler for this might look like this;
     val u = rng.nextDouble()
     if (math.log(u) < log_acceptance_prob) then proposed_move
       else x
-
   }
 #+end_src
 
 #+REVEAL: split
 
-Once we've chosen a, initial value, we can the define the rest of the infinite chain using a operation ~LazyList.iterate~ in scala
+Once we've chosen a, initial value, we can the define the rest of the infinite chain using a operation '~LazyList.iterate~' in scala
 #+ATTR_REVEAL: :frag t
 #+begin_src scala :tangle no
   mh_sample = LazyList.iterate(x0)(
@@ -304,7 +307,7 @@ By can, of course, do the usual stuff on this list, like compute estimates
 
 #+REVEAL: split
 
-And we can plot things as normal (here I'm using my own ~plotter~ function to simplify things);
+And we can plot things as normal (here I'm using my own '~plotter~' function to simplify things);
 #+ATTR_REVEAL: :frag t
 #+begin_src scala
   plotter(mrth_sample, n, 0, "./MHplot.png")
@@ -312,7 +315,7 @@ And we can plot things as normal (here I'm using my own ~plotter~ function to si
 #+ATTR_REVEAL: :frag t
 [[file:./Scala_source/MHplot.png]]
 
-* And that's all I wanted to talk about!
+* And that's all I wanted to talk about
 
 The scala and python code for the presentation, as well as the presentation itself, is available on my github, [[https://github.com/tatephughes/Lazy-Evaluation-in-Statistical-Computing][github.com/tatephughes/]].
 
